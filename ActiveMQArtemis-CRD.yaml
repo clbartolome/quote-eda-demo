@@ -1,12 +1,8 @@
 apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
-  creationTimestamp: "2023-10-28T11:11:05Z"
-  generation: 7
   name: amq-broker
   namespace: amq-broker
-  resourceVersion: "114956027"
-  uid: 6ffd7141-e6e0-403a-a05b-4a7857f1af4e
 spec:
   acceptors:
   - connectionsAllowed: 5
@@ -25,41 +21,3 @@ spec:
     persistenceEnabled: true
     requireLogin: false
     size: 2
-status:
-  conditions:
-  - lastTransitionTime: "2023-10-28T11:20:29Z"
-    message: ""
-    observedGeneration: 7
-    reason: ValidationSucceded
-    status: "True"
-    type: Valid
-  - lastTransitionTime: "2023-10-28T18:03:32Z"
-    message: ""
-    reason: Applied
-    status: "True"
-    type: BrokerPropertiesApplied
-  - lastTransitionTime: "2023-10-28T18:03:32Z"
-    message: ""
-    reason: AllPodsReady
-    status: "True"
-    type: Deployed
-  - lastTransitionTime: "2023-10-28T18:03:32Z"
-    message: ""
-    reason: ResourceReady
-    status: "True"
-    type: Ready
-  deploymentPlanSize: 2
-  podStatus:
-    ready:
-    - amq-broker-ss-0
-    - amq-broker-ss-1
-  scaleLabelSelector: ActiveMQArtemis=amq-broker,application=amq-broker-app
-  upgrade:
-    majorUpdates: true
-    minorUpdates: true
-    patchUpdates: true
-    securityUpdates: true
-  version:
-    brokerVersion: 7.11.3
-    image: registry.redhat.io/amq7/amq-broker-rhel8@sha256:0edbc311d89da507081c529a1696697f95fdc1b22ff07bdbae21a9fd44c49358
-    initImage: registry.redhat.io/amq7/amq-broker-init-rhel8@sha256:684992b8fbbce937be2f84fc1599082c6e50ecf4b5b68d4daf99be171b937c23
