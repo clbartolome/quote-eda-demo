@@ -21,3 +21,4 @@ spec:
     persistenceEnabled: true
     requireLogin: false
     size: 2
+    clustered: true
