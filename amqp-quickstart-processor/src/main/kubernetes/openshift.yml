@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: quotes-app
 data:
-  AMQP_HOST: amq-broker-hdls-svc
-  AMQP_PORT: "61616"
+  AMQP_HOST: amq-broker-acceptor-std-0-svc
+  AMQP_PORT: "5672"
   AMQP_USERNAME: admin
   AMQP_PASSWORD: redhat1!

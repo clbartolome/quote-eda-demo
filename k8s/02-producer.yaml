@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: producer
+spec:
+  parallelism: 1    
+  completions: 1    
+  activeDeadlineSeconds: 1800 
+  backoffLimit: 2
+  template:         
+    metadata:
+      name: producer
+    spec:
+      containers:
+      - name: producer
+        image: image-registry.openshift-image-registry.svc:5000/amq-broker/amq-broker-rhel8:7.11.3-1.1698106824
+        command: ["/opt/amq/bin/artemis", "producer", "--user", "admin", "--password", "redhat1!", "--url", "(tcp://amq-broker-acceptor-std-0-svc:5672,tcp://amq-broker-acceptor-std-1-svc:5672)?ha=true&reconnectAttempts=10", "--message-count", "10000"]
+      restartPolicy: OnFailure 
