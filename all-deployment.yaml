@@ -1,0 +1,131 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.7.0
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2023-10-27T14:28:46Z"
+  labels:
+    app: artemis
+  name: artemis
+spec:
+  ports:
+  - name: "5672"
+    nodePort: 31416
+    port: 5672
+    targetPort: 5672
+  - name: "8161"
+    nodePort: 30187
+    port: 8161
+    targetPort: 8161
+  - name: "61616"
+    nodePort: 31837
+    port: 61616
+    targetPort: 61616
+  selector:
+    app: artemis
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2023-10-27T14:28:46Z"
+  labels:
+    app: artemis
+  name: artemis-deployment
+spec:
+  selector:
+    matchLabels:
+      app: artemis
+  template:
+    metadata:
+      creationTimestamp: "2023-10-27T14:28:46Z"
+      labels:
+        app: artemis
+      name: artemis
+    spec:
+      containers:
+      - env:
+        - name: AMQ_PASSWORD
+          value: quarkus
+        - name: AMQ_USER
+          value: quarkus
+        image: quay.io/artemiscloud/activemq-artemis-broker:latest
+        name: amqp-quickstartartemis1
+        ports:
+        - containerPort: 5672
+        - containerPort: 8161
+        - containerPort: 61616
+        securityContext:
+          runAsNonRoot: true
+---
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.7.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2023-10-27T14:29:01Z"
+  labels:
+    app: amqp-quickstart-producer
+  name: amqp-quickstart-producer-deployment
+spec:
+  selector:
+    matchLabels:
+      app: amqp-quickstart-producer
+  template:
+    metadata:
+      creationTimestamp: "2023-10-27T14:29:01Z"
+      labels:
+        app: amqp-quickstart-producer
+      name: amqp-quickstart-producer
+    spec:
+      containers:
+      - env:
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_HOST
+          value: artemis
+        image: localhost/quarkus-quickstarts/amqp-quickstart-producer:1.0-native
+        name: amqp-quickstartproducer1
+        ports:
+        - containerPort: 8080
+          hostPort: 8080
+        securityContext:
+          runAsNonRoot: true
+---
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.7.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: "2023-10-27T14:30:08Z"
+  labels:
+    app: amqp-quickstart-processor
+  name: amqp-quickstart-processor-deployment
+spec:
+  selector:
+    matchLabels:
+      app: amqp-quickstart-processor
+  template:
+    metadata:
+      creationTimestamp: "2023-10-27T14:30:08Z"
+      labels:
+        app: amqp-quickstart-processor
+      name: amqp-quickstart-processor
+    spec:
+      containers:
+      - env:
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_HOST
+          value: artemis
+        image: localhost/quarkus-quickstarts/amqp-quickstart-processor:1.0-native
+        name: amqp-quickstartprocessor1
+        securityContext:
+          runAsNonRoot: true
+
