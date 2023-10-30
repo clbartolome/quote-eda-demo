@@ -59,3 +59,48 @@ Then, start the system using:
 > docker compose up
 ```
 Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
+
+## Openshift Deployment
+
+Install the AMQ Broker Operator
+
+Deploy the broker:
+
+```sh
+oc apply -f k8s/01-ActiveMQArtemis-CRD.yaml
+```
+
+Deploy the processor:
+
+```sh
+./mvnw -f amqp-quickstart-processor package -DskipTests -Dquarkus.kubernetes.deploy=true
+```
+
+Deploy the producer:
+```sh
+./mvnw -f amqp-quickstart-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
+```
+## Broker Test
+
+Import AMQ Broker image:
+
+```sh
+oc import-image amq7/amq-broker-rhel8:7.11.3-1.1698106824 --from=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3-1.1698106824 --confirm
+```
+
+Launch the producer job and show the logs:
+```sh
+oc create -f k8s/02-producer.yaml
+oc logs -f -l job-name=producer
+```
+
+Launch the consumer job and show the logs:
+```sh
+oc create -f k8s/03-consumer.yaml
+oc logs -f -l job-name=consumer
+```
+
+Remove the jobs:
+```sh
+oc delete job consumer producer
+```
