@@ -9,6 +9,7 @@ spec:
     name: acceptor-std
     port: 5672
     protocols: amqp,core
+    expose: true
   adminPassword: redhat1!
   adminUser: admin
   console:

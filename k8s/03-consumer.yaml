@@ -14,5 +14,5 @@ spec:
       containers:
       - name: consumer
         image: image-registry.openshift-image-registry.svc:5000/amq-broker/amq-broker-rhel8:7.11.3-1.1698106824
-        command: ["/opt/amq/bin/artemis", "consumer", "--user", "admin", "--password", "redhat1!", "--url", "(tcp://amq-broker-acceptor-std-0-svc:5672,tcp://amq-broker-acceptor-std-1-svc:5672)?ha=true&reconnectAttempts=180&retryInterval=1000", "--verbose", "--message-count", "100000"]
+        command: ["/opt/amq/bin/artemis", "consumer", "--user", "admin", "--password", "redhat1!", "--url", "tcp://amq-broker-acceptor-std-0-svc:5672?failoverAttempts=10&useTopologyForLoadBalancing=true", "--verbose", "--message-count", "100000"]
       restartPolicy: OnFailure 
