@@ -18,7 +18,7 @@ In a second terminal, run:
 > mvn -f amqp-quickstart-processor quarkus:dev
 ```  
 
-Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
+Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
 
 ## Build the application in JVM mode
 
@@ -103,4 +103,38 @@ oc logs -f -l job-name=consumer
 Remove the jobs:
 ```sh
 oc delete job consumer producer
+```
+
+## AMQ Broker failover test
+
+Import the AMQ Broker image for the job:
+
+```sh
+oc import-image amq7/amq-broker-rhel8:7.11.3-1.1698106824 --from=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3-1.1698106824 --confirm
+```
+
+Create producer and consumer:
+
+```sh
+oc create -f k8s/02-producer.yaml
+oc create -f k8s/03-consumer.yaml
+```
+
+Check where the producer and consumer are connected:
+
+```sh
+oc rsh amq-broker-ss-0
+```
+
+Inside the container issue the following commands to check the first instance and repeat for others:
+
+```sh
+amq-broker/bin/artemis queue stat --url tcp://amq-broker-acceptor-std-0-svc:5672
+```
+
+Follow the job logs:
+
+```sh
+oc logs -f -l job-name=consumer
+oc logs -f -l job-name=producer
 ```
