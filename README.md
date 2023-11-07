@@ -1,108 +1,26 @@
-Quarkus AMQP 1.0 Quickstart
+AMQ Broker Demo
 ============================
 
-This project illustrates how you can interact with AMQP 1.0 (Apache Artemis in this quickstart) using MicroProfile Reactive Messaging.
-The complete instructions are available on https://quarkus.io/guides/amqp.
+The purpose of this demo is to:
 
-## Start the application in dev mode
+- Deploy AMQ Broker in OpenShift
+- Prove the AMQ Broker failover
+- Deploy a simple Quote application which leverages AMQ Broker for asynchronous backend interactions
 
-In a first terminal, run:
+## AMQ Broker installation
 
-```bash
-> mvn -f amqp-quickstart-producer quarkus:dev
+Install the AMQ Broker Operator through the OperatorHub
+
+Create a project:
+
+```sh
+oc new-project amq-broker
 ```
-
-In a second terminal, run:
-
-```bash
-> mvn -f amqp-quickstart-processor quarkus:dev
-```  
-
-Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
-
-## Build the application in JVM mode
-
-To build the applications, run:
-
-```bash
-> mvn -f amqp-quickstart-producer package
-> mvn -f amqp-quickstart-processor package
-```
-
-Because we are running in _prod_ mode, we need to provide an AMQP 1.0 broker.
-The [docker-compose.yml](docker-compose.yml) file starts the broker and your application.
-
-Start the broker and the applications using:
-
-```bash
-> docker compose up --build
-```
-
-Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
- 
-
-## Build the application in native mode
-
-To build the applications into native executables, run:
-
-```bash
-> mvn -f amqp-quickstart-producer package -Pnative  -Dquarkus.native.container-build=true
-> mvn -f amqp-quickstart-processor package -Pnative -Dquarkus.native.container-build=true
-```
-
-The `-Dquarkus.native.container-build=true` instructs Quarkus to build Linux 64bits native executables, who can run inside containers.  
-
-Then, start the system using:
-
-```bash
-> export QUARKUS_MODE=native
-> docker compose up
-```
-Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
-
-## Openshift Deployment
-
-Install the AMQ Broker Operator
 
 Deploy the broker:
 
 ```sh
 oc apply -f k8s/01-ActiveMQArtemis-CRD.yaml
-```
-
-Deploy the processor:
-
-```sh
-./mvnw -f amqp-quickstart-processor package -DskipTests -Dquarkus.kubernetes.deploy=true
-```
-
-Deploy the producer:
-```sh
-./mvnw -f amqp-quickstart-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
-```
-## Broker Test
-
-Import AMQ Broker image:
-
-```sh
-oc import-image amq7/amq-broker-rhel8:7.11.3-1.1698106824 --from=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3-1.1698106824 --confirm
-```
-
-Launch the producer job and show the logs:
-```sh
-oc create -f k8s/02-producer.yaml
-oc logs -f -l job-name=producer
-```
-
-Launch the consumer job and show the logs:
-```sh
-oc create -f k8s/03-consumer.yaml
-oc logs -f -l job-name=consumer
-```
-
-Remove the jobs:
-```sh
-oc delete job consumer producer
 ```
 
 ## AMQ Broker failover test
@@ -141,3 +59,79 @@ oc delete pod amq-broker-ss-0
 ```
 
 You should notice that both consumer and producer stop for a couple of seconds and then continue (failback) on the other broker.
+
+## Quarkus Quote Demo
+
+This application is based on a Quarkus sample available at https://quarkus.io/guides/amqp.
+Check there detailed information about the application which use the AMQP 1.0 protocol.
+It was introduced a small enhancement in the backend service to simulate a varying response time leading to unordered replies:
+[QuoteProcessor.java](amqp-quickstart-processor/src/main/java/org/acme/amqp/processor/QuoteProcessor.java)
+
+### Start the application in dev mode
+
+In a first terminal, run:
+
+```sh
+mvn -f amqp-quickstart-producer quarkus:dev
+```
+
+In a second terminal, run:
+
+```sh
+mvn -f amqp-quickstart-processor quarkus:dev
+```  
+
+Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
+
+### Build the application in JVM mode
+
+To build the applications, run:
+
+```sh
+mvn -f amqp-quickstart-producer package
+mvn -f amqp-quickstart-processor package
+```
+
+Because we are running in _prod_ mode, we need to provide an AMQP 1.0 broker.
+The [docker-compose.yml](docker-compose.yml) file starts the broker and your application.
+
+Start the broker and the applications using:
+
+```sh
+docker compose up --build
+```
+
+Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
+ 
+
+### Build the application in native mode
+
+To build the applications into native executables, run:
+
+```sh
+mvn -f amqp-quickstart-producer package -Pnative  -Dquarkus.native.container-build=true
+mvn -f amqp-quickstart-processor package -Pnative -Dquarkus.native.container-build=true
+```
+
+The `-Dquarkus.native.container-build=true` instructs Quarkus to build Linux 64bits native executables, who can run inside containers.  
+
+Then, start the system using:
+
+```sh
+export QUARKUS_MODE=native
+docker compose up
+```
+Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
+
+### Openshift Deployment
+
+Deploy the processor:
+
+```sh
+./mvnw -f amqp-quickstart-processor package -DskipTests -Dquarkus.kubernetes.deploy=true
+```
+
+Deploy the producer:
+```sh
+./mvnw -f amqp-quickstart-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
+```
