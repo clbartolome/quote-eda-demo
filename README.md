@@ -107,20 +107,20 @@ oc delete job consumer producer
 
 ## AMQ Broker failover test
 
-Import the AMQ Broker image for the job:
+Launch the producer pod:
 
 ```sh
-oc import-image amq7/amq-broker-rhel8:7.11.3-1.1698106824 --from=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3-1.1698106824 --confirm
+oc run producer -ti --image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3 --rm=true --restart=Never -- \
+    /opt/amq/bin/artemis producer --user admin --password redhat1! --url "tcp://amq-broker-acceptor-std-0-svc:5672?failoverAttempts=10&useTopologyForLoadBalancing=true" --message-count 10000 --sleep 100 --verbose
 ```
-
-Create producer and consumer:
+In another terminal launch the consumer pod:
 
 ```sh
-oc create -f k8s/02-producer.yaml
-oc create -f k8s/03-consumer.yaml
+oc run producer -ti --image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3 --rm=true --restart=Never -- \
+    /opt/amq/bin/artemis consumer --user admin --password redhat1! --url "tcp://amq-broker-acceptor-std-0-svc:5672?failoverAttempts=10&useTopologyForLoadBalancing=true" --message-count 10000 --verbose
 ```
 
-Check where the producer and consumer are connected:
+Open another terminal and check where the producer and consumer are connected:
 
 ```sh
 oc rsh amq-broker-ss-0
@@ -132,9 +132,12 @@ Inside the container issue the following commands to check the first instance an
 amq-broker/bin/artemis queue stat --url tcp://amq-broker-acceptor-std-0-svc:5672
 ```
 
-Follow the job logs:
+From the outcoming table, you should spot an active consumer.
+
+Kill broker with the attached consumer, e.g.:
 
 ```sh
-oc logs -f -l job-name=consumer
-oc logs -f -l job-name=producer
+oc delete pod amq-broker-ss-0
 ```
+
+You should notice that both consumer and producer stop for a couple of seconds and then continue (failback) on the other broker.
