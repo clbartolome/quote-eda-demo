@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: amqp-quickstart
+  name: amqp-quickstart
+spec:
+  containers:
+  - name: artemis
+    env:
+    - name: AMQ_USER
+      value: quarkus
+    - name: AMQ_EXTRA_ARGS
+      value: --relax-jolokia
+    - name: AMQ_PASSWORD
+      value: quarkus
+    image: quay.io/artemiscloud/activemq-artemis-broker:latest
+    ports:
+    - containerPort: 5672
+      hostPort: 5672
+    securityContext:
+      runAsNonRoot: true
+  - name: producer
+    env:
+    - name: AMQP_HOST
+      value: artemis
+    - name: AMQP_PORT
+      value: "5672"
+    image: localhost/quarkus-quickstarts/amqp-quickstart-producer:1.0-jvm
+    ports:
+    - containerPort: 8080
+      hostPort: 8080
+    securityContext:
+      runAsNonRoot: true
+  - name: processor
+    env:
+    - name: AMQP_PORT
+      value: "5672"
+    - name: AMQP_HOST
+      value: artemis
+    image: localhost/quarkus-quickstarts/amqp-quickstart-processor:1.0-jvm
+    securityContext:
+      runAsNonRoot: true

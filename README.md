@@ -101,8 +101,31 @@ Start the broker and the applications using:
 docker compose up --build
 ```
 
-Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
- 
+Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
+
+Alternatively, you can use **podman**:
+
+1. Build the images:
+
+    ```sh
+    podman build amqp-quickstart-processor -f amqp-quickstart-processor/src/main/docker/Dockerfile.jvm -t quarkus-quickstarts/amqp-quickstart-processor:1.0-jvm
+    podman build amqp-quickstart-producer -f amqp-quickstart-producer/src/main/docker/Dockerfile.jvm -t quarkus-quickstarts/amqp-quickstart-producer:1.0-jvm
+    ```
+
+2. Run all the containers:
+
+    ```sh
+    podman kube play amqp-quickstart-kube.yaml
+    ```
+
+Finally, to launch a container at a time:
+
+```sh
+podman network create amq-broker
+podman run -d --rm --name artemis --net=amq-broker -e AMQ_USER=quarkus -e AMQ_PASSWORD=quarkus -e AMQ_EXTRA_ARGS="--relax-jolokia" quay.io/artemiscloud/activemq-artemis-broker:latest
+podman run -d --rm --name processor --net=amq-broker -e AMQP_HOST=artemis -e AMQP_PORT=5672 amqp-quickstart-processor:1.0-jvm
+podman run -d --rm --name producer --net=amq-broker -e AMQP_HOST=artemis -e AMQP_PORT=5672 -p 8080:8080 amqp-quickstart-producer:1.0-jvm
+```
 
 ### Build the application in native mode
 
