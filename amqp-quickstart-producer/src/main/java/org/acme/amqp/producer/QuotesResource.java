@@ -17,9 +17,11 @@ import io.smallrye.mutiny.Multi;
 @Path("/quotes")
 public class QuotesResource {
 
+    // Inject a Reactive Messaging Emitter to send messages to the quote-requests channel
     @Channel("quote-requests")
-    Emitter<String> quoteRequestEmitter; // <1>
+    Emitter<String> quoteRequestEmitter;
 
+    // Injects the quotes stream which is fed by the quote channel
     @Channel("quotes")
     Multi<Quote> quotes;
 
@@ -28,9 +30,9 @@ public class QuotesResource {
      * event.
      */
     @GET
-    @Produces(MediaType.SERVER_SENT_EVENTS) // <2>
+    @Produces(MediaType.SERVER_SENT_EVENTS) // Indicates that the content is sent using Server Sent Events
     public Multi<Quote> stream() {
-        return quotes; // <3>
+        return quotes; // Returns the (reactive) stream which is fed by the quote channel
     }
 
     /**
@@ -41,8 +43,8 @@ public class QuotesResource {
     @Path("/request")
     @Produces(MediaType.TEXT_PLAIN)
     public String createRequest() {
-        UUID uuid = UUID.randomUUID();
-        quoteRequestEmitter.send(uuid.toString()); // <2>
+        UUID uuid = UUID.randomUUID();                 // On a post request, generate a random UUID and
+        quoteRequestEmitter.send(uuid.toString()); // send it to the quote request queue using the emitter
         return uuid.toString();
     }
 }

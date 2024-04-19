@@ -21,7 +21,7 @@ public class QuoteProcessor {
 
     @Incoming("requests")       // quotes-requests
     @Outgoing("quotes")         // quotes
-    @Blocking(ordered = false)                   // <3>
+    @Blocking(ordered = false)  // blocking method
     public Quote process(String quoteRequest) throws InterruptedException {
         // simulate some hard working task
         Thread.sleep(200+random.nextInt(10)*200);
