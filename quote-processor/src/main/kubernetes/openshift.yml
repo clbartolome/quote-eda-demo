@@ -5,8 +5,6 @@ metadata:
   name: quotes-app-config
   labels:
     app.kubernetes.io/name: quotes-app
+    app: quotes-app
 data:
-  AMQP_HOST: amq-broker-acceptor-std-0-svc
-  AMQP_PORT: "5672"
-  AMQP_USERNAME: admin
-  AMQP_PASSWORD: redhat1!
+  KAFKA_BOOTSTRAP_SERVERS: my-cluster-kafka-bootstrap.my-kafka.svc:9092
