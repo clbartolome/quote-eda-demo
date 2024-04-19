@@ -144,7 +144,7 @@ Then, start the system using:
 export QUARKUS_MODE=native
 docker compose up
 ```
-Then, open your browser to `http://localhost:8080/quotes.html`, and click on the "Request Quote" button.
+Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
 
 ### Openshift Deployment
 
