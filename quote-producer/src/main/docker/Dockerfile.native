@@ -7,11 +7,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native -t quarkus/amqp-quickstart-processor .
+# docker build -f src/main/docker/Dockerfile.native -t quarkus/quote-producer .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/amqp-quickstart-processor
+# docker run -i --rm -p 8080:8080 quarkus/quote-producer
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4

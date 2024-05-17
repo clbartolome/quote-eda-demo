@@ -12,12 +12,12 @@ services:
       AMQ_USER: quarkus
       AMQ_PASSWORD: quarkus
     networks:
-      - amqp-quickstart-network
+      - quote-network
 
   producer:
-    image: quarkus-quickstarts/amqp-quickstart-producer:1.0-${QUARKUS_MODE:-jvm}
+    image: quarkus-quickstarts/quote-producer:1.0-${QUARKUS_MODE:-jvm}
     build:
-      context: amqp-quickstart-producer
+      context: quote-producer
       dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
     environment:
       AMQP_HOST: artemis
@@ -25,19 +25,19 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - amqp-quickstart-network
+      - quote-network
 
   processor:
-    image: quarkus-quickstarts/amqp-quickstart-processor:1.0-${QUARKUS_MODE:-jvm}
+    image: quarkus-quickstarts/quote-processor:1.0-${QUARKUS_MODE:-jvm}
     build:
-      context: amqp-quickstart-processor
+      context: quote-processor
       dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
     environment:
       AMQP_HOST: artemis
       AMQP_PORT: 5672
     networks:
-      - amqp-quickstart-network
+      - quote-network
 
 networks:
-  amqp-quickstart-network:
-    name: amqp-quickstart
+  quote-network:
+    name: quote

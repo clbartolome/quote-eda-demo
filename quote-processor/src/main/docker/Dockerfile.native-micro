@@ -7,11 +7,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/amqp-quickstart-processor .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/quote-processor .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/amqp-quickstart-processor
+# docker run -i --rm -p 8080:8080 quarkus/quote-processor
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:1.0

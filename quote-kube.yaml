@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    app: amqp-quickstart
-  name: amqp-quickstart
+    app: quote
+  name: quote
 spec:
   containers:
   - name: artemis
@@ -26,7 +26,7 @@ spec:
       value: artemis
     - name: AMQP_PORT
       value: "5672"
-    image: localhost/quarkus-quickstarts/amqp-quickstart-producer:1.0-jvm
+    image: localhost/quarkus-quickstarts/quote-producer:1.0-jvm
     ports:
     - containerPort: 8080
       hostPort: 8080
@@ -38,6 +38,6 @@ spec:
       value: "5672"
     - name: AMQP_HOST
       value: artemis
-    image: localhost/quarkus-quickstarts/amqp-quickstart-processor:1.0-jvm
+    image: localhost/quarkus-quickstarts/quote-processor:1.0-jvm
     securityContext:
       runAsNonRoot: true
