@@ -1,71 +1,12 @@
-AMQ Broker Demo
+Quote Demo
 ============================
 
-The purpose of this demo is to:
+This application is based on a Quarkus sample available at https://quarkus.io/guides/amqp. 
 
-- Deploy AMQ Broker in OpenShift
-- Prove the AMQ Broker failover
-- Deploy a simple Quote application which leverages AMQ Broker for asynchronous backend interactions
-
-## AMQ Broker installation
-
-Install the AMQ Broker Operator through the OperatorHub
-
-Create a project:
-
-```sh
-oc new-project amq-broker
-```
-
-Deploy the broker:
-
-```sh
-oc apply -f k8s/01-ActiveMQArtemis-CRD.yaml
-```
-
-## AMQ Broker failover test
-
-Launch the producer pod:
-
-```sh
-oc run producer -ti --image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3 --rm=true --restart=Never -- \
-    /opt/amq/bin/artemis producer --user admin --password redhat1! --url "tcp://amq-broker-acceptor-std-0-svc:5672?failoverAttempts=10&useTopologyForLoadBalancing=true" --message-count 10000 --sleep 100 --verbose
-```
-In another terminal launch the consumer pod:
-
-```sh
-oc run producer -ti --image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.3 --rm=true --restart=Never -- \
-    /opt/amq/bin/artemis consumer --user admin --password redhat1! --url "tcp://amq-broker-acceptor-std-0-svc:5672?failoverAttempts=10&useTopologyForLoadBalancing=true" --message-count 10000 --verbose
-```
-
-Open another terminal and check where the producer and consumer are connected:
-
-```sh
-oc rsh amq-broker-ss-0
-```
-
-Inside the container issue the following commands to check the first instance and repeat for others:
-
-```sh
-amq-broker/bin/artemis queue stat --url tcp://amq-broker-acceptor-std-0-svc:5672
-```
-
-From the outcoming table, you should spot an active consumer.
-
-Kill broker with the attached consumer, e.g.:
-
-```sh
-oc delete pod amq-broker-ss-0
-```
-
-You should notice that both consumer and producer stop for a couple of seconds and then continue (failback) on the other broker.
-
-## Quarkus Quote Demo
-
-This application is based on a Quarkus sample available at https://quarkus.io/guides/amqp.
-Check there detailed information about the application which use the AMQP 1.0 protocol.
-It was introduced a small enhancement in the backend service to simulate a varying response time leading to unordered replies:
+A small enhancement has been introduced to the backend service to simulate a variable response time resulting in out-of-order responses:
 [QuoteProcessor.java](quote-processor/src/main/java/org/acme/amqp/processor/QuoteProcessor.java)
+
+It was originally designed to use the AMQP protocol, but in this branch the configuration is changed to sit on top of Kafka: comparing it with the main branch you'll notice that thanks to Quarkus and Microprofile the required changes are minimal.
 
 ### Start the application in dev mode
 
@@ -83,50 +24,6 @@ mvn -f quote-processor quarkus:dev -DdebugPort=5006
 
 Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
 
-### Build the application in JVM mode
-
-To build the applications, run:
-
-```sh
-mvn -f quote-producer package
-mvn -f quote-processor package
-```
-
-Because we are running in _prod_ mode, we need to provide an AMQP 1.0 broker.
-The [docker-compose.yml](docker-compose.yml) file starts the broker and your application.
-
-Start the broker and the applications using:
-
-```sh
-docker compose up --build
-```
-
-Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
-
-Alternatively, you can use **podman**:
-
-1. Build the images:
-
-    ```sh
-    podman build quote-processor -f quote-processor/src/main/docker/Dockerfile.jvm -t quarkus-quickstarts/quote-processor:1.0-jvm
-    podman build quote-producer -f quote-producer/src/main/docker/Dockerfile.jvm -t quarkus-quickstarts/quote-producer:1.0-jvm
-    ```
-
-2. Run all the containers:
-
-    ```sh
-    podman kube play quote-kube.yaml
-    ```
-
-Finally, to launch a container at a time:
-
-```sh
-podman network create amq-broker
-podman run -d --rm --name artemis --net=amq-broker -e AMQ_USER=quarkus -e AMQ_PASSWORD=quarkus -e AMQ_EXTRA_ARGS="--relax-jolokia" quay.io/artemiscloud/activemq-artemis-broker:latest
-podman run -d --rm --name processor --net=amq-broker -e AMQP_HOST=artemis -e AMQP_PORT=5672 quote-processor:1.0-jvm
-podman run -d --rm --name producer --net=amq-broker -e AMQP_HOST=artemis -e AMQP_PORT=5672 -p 8080:8080 quote-producer:1.0-jvm
-```
-
 ### Build the application in native mode
 
 To build the applications into native executables, run:
@@ -138,14 +35,6 @@ mvn -f quote-processor package -Pnative -Dquarkus.native.container-build=true
 
 The `-Dquarkus.native.container-build=true` instructs Quarkus to build Linux 64bits native executables, who can run inside containers.  
 
-Then, start the system using:
-
-```sh
-export QUARKUS_MODE=native
-docker compose up
-```
-Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
-
 ### Openshift Deployment
 
 Deploy the processor:
@@ -156,5 +45,11 @@ Deploy the processor:
 
 Deploy the producer:
 ```sh
-./mvnw -f quote-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
+./mvnw -f amqp-quickstart-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
+```
+
+Remove builder pods:
+
+```sh
+oc delete pods --field-selector=status.phase=Succeeded
 ```

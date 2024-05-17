@@ -4,7 +4,6 @@ kind: ConfigMap
 metadata:
   name: quotes-app-config
   labels:
-    app.kubernetes.io/name: quotes-app
     app: quotes-app
 data:
   KAFKA_BOOTSTRAP_SERVERS: my-cluster-kafka-bootstrap.my-kafka.svc:9092
