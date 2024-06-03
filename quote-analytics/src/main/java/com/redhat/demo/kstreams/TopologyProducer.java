@@ -1,12 +1,12 @@
 package com.redhat.demo.kstreams;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,11 +19,12 @@ public class TopologyProducer {
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
-        KStream<String, String> source = builder.stream("streams-plaintext-input", Consumed.with(Serdes.String(), Serdes.String()));
-
-        KStream<String, String> words = source.flatMapValues(value -> Arrays.asList(value.split("\\W+")));
-
-        words.to("streams-pipe-output", Produced.with(Serdes.String(), Serdes.String()));
+        builder.<String, String>stream("streams-plaintext-input")
+               .flatMapValues(value -> Arrays.asList(value.toLowerCase(Locale.getDefault()).split("\\W+")))
+               .groupBy((key, value) -> value)
+               .count(Materialized.as("counts-store"))
+               .toStream()
+               .to("streams-wordcount-output", Produced.with(Serdes.String(), Serdes.Long()));
 
         var topology = builder.build();
 

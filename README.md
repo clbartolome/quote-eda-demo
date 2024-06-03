@@ -24,6 +24,20 @@ mvn -f quote-processor quarkus:dev -DdebugPort=5006
 
 Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
 
+### Start local kafka
+
+If you prefer disable the devservices, you can launch a local Kafka with the following options:
+
+```sh
+docker compose up
+```
+
+or 
+
+```
+podman kube play podman-play.yaml
+```
+
 ### Build the application in native mode
 
 To build the applications into native executables, run:
@@ -45,7 +59,7 @@ Deploy the processor:
 
 Deploy the producer:
 ```sh
-./mvnw -f amqp-quickstart-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
+./mvnw -f quote-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
 ```
 
 Remove builder pods:
