@@ -3,6 +3,7 @@ package org.acme.amqp.producer;
 import java.util.UUID;
 
 import org.acme.amqp.model.Quote;
+import org.acme.amqp.model.QuoteAggregate;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.jboss.logging.Logger;
@@ -27,6 +28,10 @@ public class QuotesResource {
     @Channel("quotes")
     Multi<Quote> quotes;
 
+    // Injects the quotes stream which is fed by the quote channel
+    @Channel("quote-aggregates")
+    Multi<QuoteAggregate> quoteAggregates;
+    
     /**
      * Endpoint retrieving the "quotes" queue and sending the items to a server sent
      * event.
@@ -34,8 +39,20 @@ public class QuotesResource {
     @GET
     @Produces(MediaType.SERVER_SENT_EVENTS) // Indicates that the content is sent using Server Sent Events
     public Multi<Quote> stream() {
-        LOG.info("stream for SSE");
+        LOG.info("quote stream for SSE");
         return quotes; // Returns the (reactive) stream which is fed by the quote channel
+    }
+
+    /**
+     * Endpoint retrieving the "quote-aggregates" queue and sending the items to a server sent
+     * event.
+     */
+    @Path("aggregates")
+    @GET
+    @Produces(MediaType.SERVER_SENT_EVENTS) // Indicates that the content is sent using Server Sent Events
+    public Multi<QuoteAggregate> aggregateStream() {
+        LOG.info("aggregate stream for SSE");
+        return quoteAggregates; // Returns the (reactive) stream which is fed by the quoteAggregates channel
     }
 
     /**
