@@ -20,9 +20,15 @@ In a second terminal, run:
 
 ```sh
 mvn -f quote-processor quarkus:dev -DdebugPort=5006
-```  
+```
 
 Then, open your browser to `http://localhost:8080/`, and click on the "Request Quote" button.
+
+Optionally, you can launch the analytics µService:
+
+```sh
+mvn -f quote-analytics quarkus:dev -DdebugPort=5007
+```
 
 ### Start local kafka
 
