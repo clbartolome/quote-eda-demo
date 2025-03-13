@@ -38,9 +38,13 @@ Install ArgoCD and Streams for Apache Kafka operators.
 
 Create a namespace `my-kafka` and a Kafka instance with default configuration (do not change anything).
 
+
 In a terminal, create the quotes application in ArgoCD:
 
 ```sh
+oc new-project quotes
+oc adm policy add-cluster-role-to-user cluster-admin  system:serviceaccount:openshift-gitops:openshift-gitops-argocd-application-controller -n quotes
+
 oc apply -f argocd/quote-app.yaml
 ```
 

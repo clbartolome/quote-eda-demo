@@ -1,0 +1,21 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  labels:
+    scaledobject.keda.sh/name: quote-producer-scaler
+  name: quote-producer-scaler
+  namespace: quotes
+spec:
+  maxReplicaCount: 10
+  minReplicaCount: 1
+  pollingInterval: 5
+  scaleTargetRef:
+    kind: Deployment
+    name: quote-producer 
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: my-cluster-kafka-bootstrap.my-kafka:9092
+        consumerGroup: quote-producer
+        topic: quotes
+        lagThreshold: "5"

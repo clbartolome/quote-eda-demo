@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: quotes
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: quotes
+    server: https://kubernetes.default.svc
+  source:
+    path: argocd/quotes
+    repoURL: https://github.com/clbartolome/quote-eda-demo
+    targetRevision: main
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

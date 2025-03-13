@@ -12,7 +12,6 @@ metadata:
     app.openshift.io/runtime: quarkus
     app.openshift.io/runtime-namespace: quotes
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: quote-producer
