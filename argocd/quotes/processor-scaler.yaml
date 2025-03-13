@@ -8,7 +8,6 @@ metadata:
 spec:
   maxReplicaCount: 10
   minReplicaCount: 0
-  pollingInterval: 5
   scaleTargetRef:
     kind: Deployment
     name: quote-processor 
@@ -18,4 +17,4 @@ spec:
         bootstrapServers: my-cluster-kafka-bootstrap.your-kafka:9092
         consumerGroup: quote-processor
         topic: quotes
-        lagThreshold: "5"
+        lagThreshold: "10"
