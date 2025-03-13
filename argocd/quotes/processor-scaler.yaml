@@ -17,5 +17,5 @@ spec:
       metadata:
         bootstrapServers: my-cluster-kafka-bootstrap.your-kafka:9092
         consumerGroup: quote-processor
-        topic: quotes
+        topic: quote-requests
         lagThreshold: "10"
