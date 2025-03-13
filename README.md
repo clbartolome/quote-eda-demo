@@ -8,11 +8,13 @@ A small enhancement has been introduced to the backend service to simulate a var
 
 It was originally designed to use the AMQP protocol, but in this branch the configuration is changed to sit on top of Kafka: comparing it with the main branch you'll notice that thanks to Quarkus and Microprofile the required changes are minimal.
 
-### Start the application in dev mode
+### Run Locally
 
 In a first terminal, run:
 
 ```sh
+podman compose up -d 
+
 mvn -f quote-producer quarkus:dev
 ```
 
@@ -30,46 +32,34 @@ Optionally, you can launch the analytics µService:
 mvn -f quote-analytics quarkus:dev -DdebugPort=5007
 ```
 
-### Start local kafka
+### Run In OpenShift
 
-If you prefer disable the devservices, you can launch a local Kafka with the following options:
+Install ArgoCD and Streams for Apache Kafka operators.
 
-```sh
-docker compose up
-```
+Create a namespace `my-kafka` and a Kafka instance with default configuration (do not change anything).
 
-or 
-
-```
-podman kube play podman-play.yaml
-```
-
-### Build the application in native mode
-
-To build the applications into native executables, run:
+In a terminal, create the quotes application in ArgoCD:
 
 ```sh
-mvn -f quote-producer package -Pnative  -Dquarkus.native.container-build=true
+oc apply -f argocd/quote-app.yaml
+```
+
+Go to ArgoCD and review created resources.
+
+Then, open your browser and open producer route in `quotes` namespace.
+
+### Build applications images
+
+```sh
 mvn -f quote-processor package -Pnative -Dquarkus.native.container-build=true
-```
+cd quote-processor
+podman build -f src/main/docker/Dockerfile.native -t quote-processor .
+podman push quay.io/calopezb/quote-processor:1.0.0
 
-The `-Dquarkus.native.container-build=true` instructs Quarkus to build Linux 64bits native executables, who can run inside containers.  
+cd ..
 
-### Openshift Deployment
-
-Deploy the processor:
-
-```sh
-./mvnw -f quote-processor package -DskipTests -Dquarkus.kubernetes.deploy=true
-```
-
-Deploy the producer:
-```sh
-./mvnw -f quote-producer package -DskipTests -Dquarkus.kubernetes.deploy=true
-```
-
-Remove builder pods:
-
-```sh
-oc delete pods --field-selector=status.phase=Succeeded
+mvn -f quote-producer package -Pnative  -Dquarkus.native.container-build=true
+cd quote-producer
+podman build -f src/main/docker/Dockerfile.native -t quote-producer .
+podman push quay.io/calopezb/quote-producer:1.0.0
 ```

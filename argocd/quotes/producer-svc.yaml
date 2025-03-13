@@ -1,0 +1,25 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: quote-producer
+  namespace: quotes
+  labels:
+    app: quote-producer
+    app.kubernetes.io/component: quote-producer
+    app.kubernetes.io/instance: quote-producer
+    app.kubernetes.io/name: quote-producer
+    app.kubernetes.io/part-of: quotes-app
+    app.openshift.io/runtime-version: 1.0.0
+spec:
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: quote-producer
+    deployment: quote-producer

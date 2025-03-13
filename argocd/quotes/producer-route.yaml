@@ -1,0 +1,23 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: quote-producer
+  namespace: quotes
+  labels:
+    app: quote-producer
+    app.kubernetes.io/component: quote-producer
+    app.kubernetes.io/instance: quote-producer
+    app.kubernetes.io/name: quote-producer
+    app.kubernetes.io/part-of: quotes-app
+    app.openshift.io/runtime-version: 1.0.0
+spec:
+  to:
+    kind: Service
+    name: quote-producer
+    weight: 100
+  port:
+    targetPort: 8080-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

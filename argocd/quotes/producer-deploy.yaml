@@ -1,0 +1,48 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: quote-producer
+  namespace: quotes
+  labels:
+    app: quote-producer
+    app.kubernetes.io/component: quote-producer
+    app.kubernetes.io/instance: quote-producer
+    app.kubernetes.io/name: quote-producer
+    app.kubernetes.io/part-of: quotes-app
+    app.openshift.io/runtime: quarkus
+    app.openshift.io/runtime-namespace: quotes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quote-producer
+  template:
+    metadata:
+      labels:
+        app: quote-producer
+        deployment: quote-producer
+    spec:
+      containers:
+        - name: quote-producer
+          image: 'quay.io/calopezb/quote-producer:1.0.0'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: quote-config
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: quote-config
+  namespace: quotes
+data:
+  KAFKA_BOOTSTRAP_SERVERS: 'my-cluster-kafka-bootstrap.my-kafka:9092'
