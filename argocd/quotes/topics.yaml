@@ -5,7 +5,7 @@ metadata:
   name: quote-requests
   labels:
     strimzi.io/cluster: my-cluster
-  namespace: my-kafka
+  namespace: your-kafka
 spec:
   partitions: 10
   replicas: 3
@@ -19,7 +19,7 @@ metadata:
   name: quotes
   labels:
     strimzi.io/cluster: my-cluster
-  namespace: my-kafka
+  namespace: your-kafka
 spec:
   partitions: 10
   replicas: 3
