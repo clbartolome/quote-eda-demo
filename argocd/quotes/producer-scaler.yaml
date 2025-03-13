@@ -15,7 +15,7 @@ spec:
   triggers:
     - type: kafka
       metadata:
-        bootstrapServers: my-cluster-kafka-bootstrap.my-kafka:9092
+        bootstrapServers: my-cluster-kafka-bootstrap.your-kafka:9092
         consumerGroup: quote-producer
         topic: quotes
         lagThreshold: "5"
