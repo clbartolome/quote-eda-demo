@@ -3,6 +3,8 @@ apiVersion: apps/v1
 metadata:
   name: quote-processor
   namespace: quotes
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
   labels:
     app: quote-processor
     app.kubernetes.io/component: quote-processor

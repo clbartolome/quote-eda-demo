@@ -3,6 +3,8 @@ apiVersion: apps/v1
 metadata:
   name: quote-producer
   namespace: quotes
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
   labels:
     app: quote-producer
     app.kubernetes.io/component: quote-producer

@@ -3,6 +3,8 @@ kind: KafkaTopic
 apiVersion: kafka.strimzi.io/v1beta2
 metadata:
   name: quote-requests
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     strimzi.io/cluster: my-cluster
   namespace: my-kafka
