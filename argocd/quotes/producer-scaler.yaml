@@ -18,4 +18,4 @@ spec:
         bootstrapServers: my-cluster-kafka-bootstrap.your-kafka:9092
         consumerGroup: quote-producer
         topic: quotes
-        lagThreshold: "5"
+        lagThreshold: "10"
