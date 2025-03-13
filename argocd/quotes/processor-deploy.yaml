@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: quote-processor
+  namespace: quotes
+  labels:
+    app: quote-processor
+    app.kubernetes.io/component: quote-processor
+    app.kubernetes.io/instance: quote-processor
+    app.kubernetes.io/name: quote-processor
+    app.kubernetes.io/part-of: quotes-app
+    app.openshift.io/runtime: quarkus
+    app.openshift.io/runtime-namespace: quotes
+spec:
+  selector:
+    matchLabels:
+      app: quote-processor
+  template:
+    metadata:
+      labels:
+        app: quote-processor
+        deployment: quote-processor
+    spec:
+      containers:
+        - name: quote-processor
+          image: 'quay.io/calopezb/quote-processor:1.0.0'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: quote-config
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
