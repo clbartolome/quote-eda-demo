@@ -5,8 +5,6 @@ metadata:
     scaledobject.keda.sh/name: quote-processor-scaler
   name: quote-processor-scaler
   namespace: quotes
-  annotations:
-    argocd.argoproj.io/sync-wave: "4"
 spec:
   maxReplicaCount: 10
   pollingInterval: 5

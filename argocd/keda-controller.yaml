@@ -3,8 +3,6 @@ apiVersion: keda.sh/v1alpha1
 metadata:
   name: keda
   namespace: openshift-keda
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   watchNamespace: 'quotes'
   operator:

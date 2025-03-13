@@ -45,6 +45,9 @@ In a terminal, create the quotes application in ArgoCD:
 oc new-project quotes
 oc adm policy add-cluster-role-to-user cluster-admin  system:serviceaccount:openshift-gitops:openshift-gitops-argocd-application-controller -n quotes
 
+# Create and wait until controller is ready
+oc apply -f argocd/keda-controller.yaml
+
 oc apply -f argocd/quote-app.yaml
 ```
 
