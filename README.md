@@ -55,6 +55,26 @@ Go to ArgoCD and review created resources.
 
 Then, open your browser and open producer route in `quotes` namespace.
 
+You can run the k6 load test by doing (update URL in script.js):
+```sh
+k6 run script.js --insecure-skip-tls-verify
+```
+
+In order to cleanup topics use these commands:
+```sh
+# Quotes Topic
+oc exec -it my-cluster-kafka-0 -- bin/kafka-console-consumer.sh \
+  --bootstrap-server my-cluster-kafka-bootstrap:9092 \
+  --topic quotes \
+  --consumer-property group.id=quote-producer
+
+# Quotes Topic
+oc exec -it my-cluster-kafka-0 -- bin/kafka-console-consumer.sh \
+  --bootstrap-server my-cluster-kafka-bootstrap:9092 \
+  --topic quote-requests \
+  --consumer-property group.id=quote-processor
+```
+
 ### Build applications images
 
 ```sh
